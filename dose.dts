@@ -7,13 +7,11 @@
 	fragment@0 {
 		target = <&uart0>;
 		__overlay__ {
-			status = "okay";
-
 			dose {
-				status = "okay";
 				compatible = "riot,dose";
 				interrupts = <23 8>;
 				interrupt-parent = <&gpio>;
+				status = "okay";
 			};
 		};
 	};

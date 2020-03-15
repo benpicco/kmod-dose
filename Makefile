@@ -6,9 +6,9 @@ all:
 %.dtbo: %.dts
 	dtc -@ -O dtb -o $@ $<
 
-run: dose.ko
+install: dose.ko dose.dtbo
 	-sudo rmmod dose.ko
-	sudo insmod dose.ko
-
-install: dose.ko
+	sudo cp dose.dtbo /boot/overlays/
 	sudo cp dose.ko /lib/modules/`uname -r`/kernel/drivers/net/ethernet
+	sudo dtoverlay dose
+	sudo modprobe dose
