@@ -17,6 +17,7 @@ static const struct of_device_id dose_of_match[] = {
 	{ .compatible = "riot,dose" },
 	{ }
 };
+MODULE_DEVICE_TABLE(of, dose_of_match);
 
 static struct serdev_device_driver dose_driver = {
 	.driver = {
