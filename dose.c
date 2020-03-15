@@ -2,21 +2,29 @@
 // DOSE for Linux
 // Copyright (c) 2020 by Benjamin Valentin <benjamin.valentin@ml-pa.com>
 
+#include <linux/mod_devicetable.h>
 #include <linux/serdev.h>
 #include <linux/module.h>
 
-static int __init init_dose(void)
+static int dose_probe(struct serdev_device *serdev)
 {
-	printk(KERN_INFO "Hello, Linux!\n");
+	printk(KERN_INFO "Hello, DOSE!\n");
+
 	return 0;
 }
 
-static void __exit exit_dose(void)
-{
-	printk(KERN_INFO "Goodbye, Linux!\n");
-}
+static const struct of_device_id dose_of_match[] = {
+	{ .compatible = "riot,dose" },
+	{ }
+};
 
-module_init(init_dose)
-module_exit(exit_dose)
+static struct serdev_device_driver dose_driver = {
+	.driver = {
+		.name = "dose",
+		.of_match_table = dose_of_match,
+	},
+	.probe = dose_probe,
+};
+module_serdev_device_driver(dose_driver);
 
 MODULE_LICENSE("GPL");
