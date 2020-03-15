@@ -27,4 +27,7 @@ static struct serdev_device_driver dose_driver = {
 };
 module_serdev_device_driver(dose_driver);
 
+MODULE_DESCRIPTION("DOSE");
+MODULE_AUTHOR("Benjamin Valentin <benjamin.valentin@ml-pa.com>");
+MODULE_VERSION("0.1");
 MODULE_LICENSE("GPL");
