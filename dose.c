@@ -23,7 +23,7 @@ dose_tty_receive(struct serdev_device *serdev, const unsigned char *data,
 {
 	dev_info(&serdev->dev, "got %d bytes: '%s'\n", count, data);
 
-	return 0;
+	return count;
 }
 
 /* Write out any remaining transmit buffer. Scheduled when tty is writable */
@@ -50,7 +50,8 @@ static void dose_tty_wakeup(struct serdev_device *serdev)
 
 static struct serdev_device_ops dose_serdev_ops = {
 	.receive_buf = dose_tty_receive,
-	.write_wakeup = dose_tty_wakeup,
+    .write_wakeup = serdev_device_write_wakeup,
+//	.write_wakeup = dose_tty_wakeup,
 };
 
 static int dose_probe(struct serdev_device *serdev)
@@ -80,18 +81,22 @@ static int dose_probe(struct serdev_device *serdev)
 
 	of_property_read_u32(serdev->dev.of_node, "current-speed", &speed);
 
+	serdev_device_set_drvdata(serdev, dose);
+	serdev_device_set_client_ops(serdev, &dose_serdev_ops);
+
 	ret = serdev_device_open(serdev);
 	if (ret) {
 		dev_err(&serdev->dev, "Unable to open device\n");
 		goto free;
 	}
 
-	serdev_device_set_client_ops(serdev, &dose_serdev_ops);
-
 	speed = serdev_device_set_baudrate(serdev, speed);
 	dev_info(&serdev->dev, "Using baudrate: %u\n", speed);
 
 	serdev_device_set_flow_control(serdev, false);
+
+	ret = serdev_device_write(serdev, "Hello from Linux\n", 19, MAX_SCHEDULE_TIMEOUT);
+	dev_info(&serdev->dev, "Wrote %d bytes\n", ret);
 
 	return 0;
 free:
@@ -103,7 +108,7 @@ static void dose_uart_remove(struct serdev_device *serdev)
 {
 	struct dose *dose = serdev_device_get_drvdata(serdev);
 
-	unregister_netdev(dose->net_dev);
+//	unregister_netdev(dose->net_dev);
 
 	/* Flush any pending characters in the driver. */
 	serdev_device_close(serdev);

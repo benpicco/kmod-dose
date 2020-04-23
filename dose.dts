@@ -6,12 +6,14 @@
 
 	fragment@0 {
 		target = <&uart0>;
+		status = "okay";
+
 		__overlay__ {
 			dose {
 				compatible = "riot,dose";
+				current-speed = <115200>;
 				interrupts = <23 8>;
 				interrupt-parent = <&gpio>;
-				status = "okay";
 			};
 		};
 	};
